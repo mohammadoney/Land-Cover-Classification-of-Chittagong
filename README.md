@@ -64,3 +64,4 @@ The resulting high-resolution land cover map has direct applications in:
 6. Impact
 
 This project demonstrates a complete, production-grade workflow for generating accurate land cover data. By integrating multiple data sources, employing advanced machine learning, and implementing rigorous validation and optimization, it moves beyond a simple classification to create a reliable geospatial product. This methodology can be replicated for any region, providing valuable, data-driven insights for sustainable development and environmental conservation.
+
