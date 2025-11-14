@@ -1,9 +1,6 @@
-# Land-Cover-Classification-of-Chittagong
 1. Objective
 
-The primary objective was to create a precise and reliable land cover map for the Chittagong District in Bangladesh. 
-The project aimed to classify the landscape into four distinct categories—Urban, Bare Soil, Water, and Vegetation—using satellite imagery and machine learning. 
-A key focus was on achieving high accuracy through rigorous validation, hyperparameter tuning, and post-processing techniques to ensure the map was robust and usable for environmental monitoring.
+The primary objective was to create a precise and reliable land cover map for the Chittagong District in Bangladesh. The project aimed to classify the landscape into four distinct categories—Urban, Bare Soil, Water, and Vegetation—using satellite imagery and machine learning. A key focus was on achieving high accuracy through rigorous validation, hyperparameter tuning, and post-processing techniques to ensure the map was robust and usable for environmental monitoring.
 2. Data Acquisition
 
 The project leveraged multiple geospatial data sources:
@@ -66,6 +63,4 @@ The resulting high-resolution land cover map has direct applications in:
 
 6. Impact
 
-This project demonstrates a complete, production-grade workflow for generating accurate land cover data. 
-By integrating multiple data sources, employing advanced machine learning, and implementing rigorous validation and optimization, it moves beyond a simple classification to create a reliable geospatial product. 
-This methodology can be replicated for any region, providing valuable, data-driven insights for sustainable development and environmental conservation.
+This project demonstrates a complete, production-grade workflow for generating accurate land cover data. By integrating multiple data sources, employing advanced machine learning, and implementing rigorous validation and optimization, it moves beyond a simple classification to create a reliable geospatial product. This methodology can be replicated for any region, providing valuable, data-driven insights for sustainable development and environmental conservation.
