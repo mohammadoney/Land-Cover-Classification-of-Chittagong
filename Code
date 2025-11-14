@@ -1,0 +1,507 @@
+var urban = 
+    /* color: #d61f1f */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([91.83552026828777, 22.508507782154933]),
+            {
+              "landcover": 1,  // Changed from 0 to 1
+              "system:index": "0"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.85542684921342, 22.22167766977218]),
+            {
+              "landcover": 1,  // Changed from 0 to 1
+              "system:index": "1"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.84530433812951, 22.235440871384863]),
+            {
+              "landcover": 1,  // Changed from 0 to 1
+              "system:index": "2"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.82533730022911, 22.63151433928349]),
+            {
+              "landcover": 1,  // Changed from 0 to 1
+              "system:index": "3"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.80298218749039, 22.40149787720579]),
+            {
+              "landcover": 1,  // Changed from 0 to 1
+              "system:index": "4"
+            })]),
+    bare = 
+    /* color: #fffbae */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([91.83925182462973, 22.47158939407406]),
+            {
+              "landcover": 2,  // Changed from 1 to 2
+              "system:index": "0"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.91662242469747, 22.42517322480149]),
+            {
+              "landcover": 2,  // Changed from 1 to 2
+              "system:index": "1"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.9222657924648, 22.425788108786257]),
+            {
+              "landcover": 2,  // Changed from 1 to 2
+              "system:index": "2"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.93602257205276, 22.43206254420712]),
+            {
+              "landcover": 2,  // Changed from 1 to 2
+              "system:index": "3"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.9494125208461, 22.431570648924186]),
+            {
+              "landcover": 2,  // Changed from 1 to 2
+              "system:index": "4"
+            })]),
+    water = 
+    /* color: #0b4a8b */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([91.8598042297065, 22.452181696197528]),
+            {
+              "landcover": 3,  // Changed from 2 to 3
+              "system:index": "0"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.82985481420373, 22.245450966176534]),
+            {
+              "landcover": 3,  // Changed from 2 to 3
+              "system:index": "1"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.8136983458478, 22.29312493749017]),
+            {
+              "landcover": 3,  // Changed from 2 to 3
+              "system:index": "2"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.82715411042943, 22.578628265775894]),
+            {
+              "landcover": 3,  // Changed from 2 to 3
+              "system:index": "3"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.89749708088073, 22.407253054399416]),
+            {
+              "landcover": 3,  // Changed from 2 to 3
+              "system:index": "4"
+            })]),
+    vegetation = 
+    /* color: #3db108 */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Point([91.80320160888556, 22.53646396947674]),
+            {
+              "landcover": 4,  // Changed from 3 to 4
+              "system:index": "0"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.80577930608605, 22.248588904199003]),
+            {
+              "landcover": 4,  // Changed from 3 to 4
+              "system:index": "1"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.84520829873867, 22.284794828476482]),
+            {
+              "landcover": 4,  // Changed from 3 to 4
+              "system:index": "2"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.77725356185245, 22.3173680485472]),
+            {
+              "landcover": 4,  // Changed from 3 to 4
+              "system:index": "3"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.81803527425288, 22.578507852920563]),
+            {
+              "landcover": 4,  // Changed from 3 to 4
+              "system:index": "4"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.8068406305642, 22.393781441838353]),
+            {
+              "landcover": 4,  // Changed from 3 to 4
+              "system:index": "5"
+            }),
+        ee.Feature(
+            ee.Geometry.Point([91.8033644876809, 22.393444170048266]),
+            {
+              "landcover": 4,  // Changed from 3 to 4
+              "system:index": "6"
+            })]),
+    table = ee.FeatureCollection("FAO/GAUL_SIMPLIFIED_500m/2015/level2");
+    
+
+// Filter to get Chittagong District (ADM2_NAME)
+var geometry = table
+  .filter(ee.Filter.eq("ADM2_NAME", "Chittagong"))
+  .geometry();
+
+// Center the map on Chittagong District
+Map.centerObject(geometry, 8);
+
+
+//********************************************************************
+//step-1 cloud masking
+// Harmonized Sentinel-2 Level 2A collection.
+var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED');
+
+// Cloud Score+ image collection. Note Cloud Score+ is produced from Sentinel-2
+// Level 1C data and can be applied to either L1C or L2A collections.
+var csPlus = ee.ImageCollection('GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED');
+
+// Use 'cs' or 'cs_cdf', depending on your use case; see docs for guidance.
+var QA_BAND = 'cs_cdf';
+
+// The threshold for masking; values between 0.50 and 0.65 generally work well.
+// Higher values will remove thin clouds, haze & cirrus shadows.
+var CLEAR_THRESHOLD = 0.60;
+
+// Make a clear median composite.
+var composite = s2
+    .filterBounds(geometry)
+    .filterDate('2019-01-01', '2020-01-01')
+    .linkCollection(csPlus, [QA_BAND])
+    .map(function(img) {
+      return img.updateMask(img.select(QA_BAND).gte(CLEAR_THRESHOLD));
+    })
+    .median().select('B.*').clip(geometry); //select only B bands
+
+// Sentinel-2 visualization parameters.
+var s2Viz = {bands: ['B4', 'B3', 'B2'], min: 0, max: 2500};
+
+//********************************************************************
+//step-2 add indicies
+var addIndices = function(image) {
+  var ndvi = image.normalizedDifference(['B8', 'B4']).rename(['ndvi']);
+  var ndbi = image.normalizedDifference(['B11', 'B8']).rename(['ndbi']);
+  var mndwi = image.normalizedDifference(['B3', 'B11']).rename(['mndwi']); 
+  var bsi = image.expression(
+      '(( X + Y ) - (A + B)) /(( X + Y ) + (A + B)) ', {
+        'X': image.select('B11'), //swir1
+        'Y': image.select('B4'),  //red
+        'A': image.select('B8'), // nir
+        'B': image.select('B2'), // blue
+  }).rename('bsi');
+  return image.addBands(ndvi).addBands(ndbi).addBands(mndwi).addBands(bsi);
+};
+
+var composite = addIndices(composite);
+
+
+//******************************************************************************
+
+//step-3 add other datasats        elevation datasat 
+var alos = ee.ImageCollection('JAXA/ALOS/AW3D30/V3_2');
+var proj = alos.first().projection();
+
+var elevation = alos.select('DSM').mosaic()
+  .setDefaultProjection(proj)
+  .rename('elev');
+
+var slope = ee.Terrain.slope(elevation)
+  .rename('slope');
+
+var composite = composite.addBands(elevation).addBands(slope);
+
+//**************************************************************************
+
+// Training points for land cover classification
+var gcp = urban.merge(bare).merge(water).merge(vegetation);
+
+var gcp = gcp.randomColumn();
+
+var trainingGcp = gcp.filter(ee.Filter.lt('random', 0.6));
+var validationGcp = gcp.filter(ee.Filter.gte('random', 0.6));
+
+var training = composite.sampleRegions({
+  collection: trainingGcp,
+  properties: ['landcover'],
+  scale: 10,
+  tileScale: 16
+});
+
+// Train a classifier.
+var classifier = ee.Classifier.smileRandomForest(50)
+.train({
+  features: training,  
+  classProperty: 'landcover',
+  inputProperties: composite.bandNames()
+});
+
+// Classify the image.
+var classified = composite.classify(classifier);
+
+//************************************************************************** 
+// Accuracy Assessment
+//************************************************************************** 
+
+// Function to split a featurecollection into k-folds
+var kFoldSplit = function(features, folds) {
+    var step = ee.Number(1).divide(folds);
+    var thresholds = ee.List.sequence(
+        0, ee.Number(1).subtract(step), step);
+
+    // Use seed so the distribution is stable across
+    // all calls of the function
+    features = features.randomColumn({seed: 0});
+
+    var splits = thresholds.map(function (threshold) {
+      var trainingSplit = features.filter(
+          ee.Filter.or(
+            ee.Filter.lt('random', threshold),
+            ee.Filter.gte('random', ee.Number(threshold).add(step))
+            )
+        );
+      var validationSplit = features.filter(
+          ee.Filter.and(
+            ee.Filter.gt('random', threshold),
+            ee.Filter.lte('random', ee.Number(threshold).add(step))
+            )
+      )
+      return ee.Feature(null, {
+        'training': trainingSplit,
+        'validation': validationSplit
+      });
+    
+    });
+    return ee.FeatureCollection(splits);
+};
+
+// Use k=10
+var folds = kFoldSplit(gcp, 10);
+
+// Check the split
+print('Fold 0 Training Samples', folds.first().get('training'));
+print('Fold 0 Validation Samples', folds.first().get('validation'));
+
+// Assess the accuracy for each pair of training and validation
+var accuracies = ee.FeatureCollection(folds.map(function(fold) {
+  var trainingGcp = fold.get('training');
+  var validationGcp = fold.get('validation');
+  // Overlay the point on the image to get training data.
+  var training = composite.sampleRegions({
+    collection: trainingGcp,
+    properties: ['landcover'],
+    scale: 10,
+    tileScale: 16
+  });
+
+  // Train a classifier.
+  var classifier = ee.Classifier.smileRandomForest(50)
+  .train({
+    features: training,  
+    classProperty: 'landcover',
+    inputProperties: composite.bandNames()
+  });
+  
+  var test = composite.sampleRegions({
+    collection: validationGcp,
+    properties: ['landcover'],
+    scale: 10,
+    tileScale: 16
+  });
+  
+  var accuracy = test
+    .classify(classifier)
+    .errorMatrix('landcover', 'classification')
+    .accuracy();
+  
+  return ee.Feature(null, {'accuracy': accuracy});
+}));
+
+print('K-fold Validation Results', 
+  accuracies.aggregate_array('accuracy'));
+
+var meanAccuracy = accuracies.reduceColumns({
+  reducer: ee.Reducer.mean(),
+  selectors: ['accuracy']});
+print('Mean Accuracy', meanAccuracy.get('mean'));
+
+//***************************************************************************
+// Use classification map to assess accuracy using the validation fraction
+// of the overall training set created above.
+var test = classified.sampleRegions({
+  collection: validationGcp,
+  properties: ['landcover'],
+  tileScale: 16,
+  scale: 10,
+});
+
+var testConfusionMatrix = test.errorMatrix('landcover', 'classification');
+print('Confusion Matrix', testConfusionMatrix);
+print('Test Accuracy', testConfusionMatrix.accuracy());
+
+// Hint: Look at the ee.ConfusionMatrix module for appropriate methods
+print("Consumer's accuracy", testConfusionMatrix.consumersAccuracy());
+print('F1-score', testConfusionMatrix.fscore());
+print("Producer's accuracy", testConfusionMatrix.producersAccuracy());
+
+// Post Process Classification
+
+//************************************************************************** 
+// Post process by clustering
+//************************************************************************** 
+
+// Cluster using Unsupervised Clustering methods
+var seeds = ee.Algorithms.Image.Segmentation.seedGrid(5);
+
+var snic = ee.Algorithms.Image.Segmentation.SNIC({
+  image: composite.select('B.*'), 
+  compactness: 0,
+  connectivity: 4,
+  neighborhoodSize: 10,
+  size: 2,
+  seeds: seeds
+})
+var clusters = snic.select('clusters')
+
+// Assign class to each cluster based on 'majority' voting (using ee.Reducer.mode()
+var smoothed = classified.addBands(clusters);
+var palette = ["#d61f1f", "#fffbae", "#0b4a8b", "#3db108"]; // Updated palette for new values
+var clusterMajority = smoothed.reduceConnectedComponents({
+  reducer: ee.Reducer.mode(),
+  labelBand: 'clusters'
+});
+Map.addLayer(clusterMajority, {min: 1, max: 4, palette: palette},  // Updated min/max
+  'Processed using Clusters');
+
+//************************************************************************** 
+// Post process by replacing isolated pixels with surrounding value
+//************************************************************************** 
+
+// count patch sizes
+var patchsize = classified.connectedPixelCount(40, false);
+
+// run a majority filter
+var filtered = classified.focal_mode({
+    radius: 10,
+    kernelType: 'square',
+    units: 'meters',
+}); 
+  
+// updated image with majority filter where patch size is small
+var connectedClassified =  classified.where(patchsize.lt(25),filtered);
+Map.addLayer(connectedClassified, {min: 1, max: 4, palette: palette},  // Updated min/max
+  'Processed using Connected Pixels');
+
+//************************************************************************** 
+// Hyperparameter Tuning
+//************************************************************************** 
+
+var testSamples = composite.sampleRegions({
+  collection: validationGcp,
+  properties: ['landcover'],
+  scale: 10,
+  tileScale: 16
+});
+
+// Tune the numberOfTrees parameter.
+var numTreesList = ee.List.sequence(10, 150, 10);
+
+var tuningAccuracies = numTreesList.map(function(numTrees) {
+  var tunedClassifier = ee.Classifier.smileRandomForest(numTrees)
+      .train({
+        features: training,
+        classProperty: 'landcover',
+        inputProperties: composite.bandNames()
+      });
+
+  return testSamples
+    .classify(tunedClassifier)
+    .errorMatrix('landcover', 'classification')
+    .accuracy();
+});
+
+var tuningChart = ui.Chart.array.values({
+  array: ee.Array(tuningAccuracies),
+  axis: 0,
+  xLabels: numTreesList
+  }).setOptions({
+      title: 'Hyperparameter Tuning for the numberOfTrees Parameter',
+      vAxis: {title: 'Validation Accuracy'},
+      hAxis: {title: 'Number of Trees', gridlines: {count: 15}}
+  });
+print(tuningChart);
+
+// Tuning Multiple Parameters
+var bagFractionList = ee.List.sequence(0.1, 0.9, 0.1);
+
+var paramAccuracies = numTreesList.map(function(numTrees) {
+  return bagFractionList.map(function(bagFraction) {
+     var tunedClassifier = ee.Classifier.smileRandomForest({
+       numberOfTrees: numTrees,
+       bagFraction: bagFraction
+     })
+      .train({
+        features: training,
+        classProperty: 'landcover',
+        inputProperties: composite.bandNames()
+      });
+
+    var accuracy = testSamples
+      .classify(tunedClassifier)
+      .errorMatrix('landcover', 'classification')
+      .accuracy();
+    return ee.Feature(null, {'accuracy': accuracy,
+      'numberOfTrees': numTrees,
+      'bagFraction': bagFraction})
+  });
+}).flatten();
+
+var tuningResults = ee.FeatureCollection(paramAccuracies);
+
+// Export results to Google Drive
+Export.table.toDrive({
+  collection: tuningResults,
+  description: 'Multiple_Parameter_Tuning_Results2',
+  folder: 'earthengine',
+  fileNamePrefix: 'numtrees_bagfraction',
+  fileFormat: 'CSV'
+});
+
+// Find optimal parameters
+var sortedResults = tuningResults.sort('accuracy', false);
+var bestFeature = sortedResults.first();
+var bestAccuracy = bestFeature.getNumber('accuracy');
+var optimalNumTrees = bestFeature.getNumber('numberOfTrees');
+var optimalBagFraction = bestFeature.getNumber('bagFraction');
+
+// Use optimal parameters for final classification
+var optimalClassifier = ee.Classifier.smileRandomForest({
+  numberOfTrees: optimalNumTrees,
+  bagFraction: optimalBagFraction
+}).train({
+  features: training,  
+  classProperty: 'landcover',
+  inputProperties: composite.bandNames()
+});
+
+var finalClassified = composite.classify(optimalClassifier);
+
+// Export the final classified image if needed
+Export.image.toDrive({
+  image: finalClassified,
+  description: 'Final_Optimized_Classification2',
+  scale: 10,
+  region: geometry,
+  maxPixels:10e10,
+  fileFormat: 'GeoTIFF'
+});
